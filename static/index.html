@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Система знаний команды (Память команды)</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Шапка приложения -->
+  <header class="app-header">
+    <div class="logo-area">
+      <div class="logo-icon">🧠</div>
+      <div class="logo-title">
+        <h1>База знаний команды</h1>
+        <p>Память команды • Поиск по данным • Верификация источников</p>
+      </div>
+    </div>
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="tab-documents">📁 Документы</button>
+      <button class="tab-btn" data-tab="tab-questions">💬 Вопросы</button>
+      <button class="tab-btn" data-tab="tab-history">📜 История</button>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- Вкладка 1: Документы -->
+    <section id="tab-documents" class="tab-content active">
+      <div class="card">
+        <h2 class="card-title">Добавить материал в базу знаний</h2>
+        <form id="add-doc-form">
+          <div class="form-group">
+            <label for="doc-title">Название документа</label>
+            <input type="text" id="doc-title" class="form-input" placeholder="Например: Регламент дежурств и инцидентов" required>
+          </div>
+          <div class="form-group">
+            <label for="doc-text">Текст документа (будет разбит на абзацы-фрагменты)</label>
+            <textarea id="doc-text" class="form-textarea" rows="6" placeholder="Вставьте полный текст регламента, инструкции или шаблона..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btn-save-doc">
+            <span>Добавить документ</span>
+          </button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Витрина документов</span>
+          <button class="btn btn-secondary btn-sm" id="btn-refresh-docs">🔄 Обновить</button>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Название</th>
+                <th>Дата создания</th>
+                <th>ID документа</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="docs-table-body">
+              <tr>
+                <td colspan="4" style="text-align:center; color: var(--text-muted);">Загрузка документов...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Вкладка 2: Вопросы -->
+    <section id="tab-questions" class="tab-content">
+      <div class="card">
+        <h2 class="card-title">Задать вопрос системе</h2>
+        <form id="ask-form">
+          <div class="form-group">
+            <label for="question-input">Вопрос к базе знаний</label>
+            <input type="text" id="question-input" class="form-input" placeholder="Например: Какой SLA установлен для ответа на код-ревью?" required>
+          </div>
+          <div style="margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Примеры:</span>
+            <button type="button" class="btn btn-secondary btn-sm sample-q" data-q="Какой SLA установлен для ответа на код-ревью?">SLA код-ревью</button>
+            <button type="button" class="btn btn-secondary btn-sm sample-q" data-q="В течение какого срока клиент может запросить возврат средств?">Возврат средств</button>
+            <button type="button" class="btn btn-secondary btn-sm sample-q" data-q="Что означает термин RPO в нашей компании?">Термин RPO</button>
+            <button type="button" class="btn btn-secondary btn-sm sample-q" data-q="По какому курсу компания принимает оплату криптовалютой?">Криптовалюта (нет в базе)</button>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btn-ask">
+            <span>Спросить систему</span>
+          </button>
+        </form>
+
+        <!-- Блок отображения результата -->
+        <div id="ask-result-container" style="display: none;" class="answer-box">
+          <div class="answer-header">
+            <strong>Ответ системы:</strong>
+            <span id="review-badge" class="badge"></span>
+          </div>
+          <div class="answer-text" id="answer-content"></div>
+
+          <div class="sources-container" id="sources-wrapper">
+            <div class="sources-title">Подтверждающие цитаты-источники:</div>
+            <div id="sources-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Вкладка 3: История -->
+    <section id="tab-history" class="tab-content">
+      <div class="card">
+        <div class="filter-bar">
+          <h2 class="card-title" style="margin: 0;">История вопросов и аудита</h2>
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <label class="filter-toggle">
+              <input type="checkbox" id="filter-needs-review">
+              <span>Только требует проверки</span>
+            </label>
+            <button class="btn btn-secondary btn-sm" id="btn-refresh-history">🔄 Обновить</button>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Дата / Время</th>
+                <th>Вопрос</th>
+                <th>Статус верификации</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body">
+              <tr>
+                <td colspan="4" style="text-align:center; color: var(--text-muted);">Загрузка истории...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Модальное окно просмотра документа -->
+  <div class="modal-overlay" id="doc-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-doc-title">Документ</h3>
+        <button class="btn btn-secondary btn-sm close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+          ID: <span id="modal-doc-id" class="code-box"></span>
+        </div>
+        <div id="modal-doc-text" style="white-space: pre-wrap;"></div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <button class="btn btn-secondary btn-sm" id="btn-modal-delete-doc" style="color: var(--danger);">🗑️ Удалить этот документ</button>
+        <button class="btn btn-secondary close-modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно деталей истории вопроса -->
+  <div class="modal-overlay" id="history-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Детали запроса</h3>
+        <button class="btn btn-secondary btn-sm close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Вопрос:</strong> <span id="modal-hist-question"></span></p>
+        <p style="margin-top: 0.5rem;"><strong>Статус:</strong> <span id="modal-hist-status"></span></p>
+        <div style="margin-top: 0.75rem;">
+          <strong>Ответ:</strong>
+          <div id="modal-hist-answer" class="answer-box" style="margin-top: 0.25rem;"></div>
+        </div>
+        <div id="modal-hist-error-box" style="margin-top: 0.75rem; display: none;">
+          <strong>Причина проверки:</strong>
+          <div id="modal-hist-error" style="color: var(--danger); font-size: 0.9rem; margin-top: 0.25rem;"></div>
+        </div>
+        <div style="margin-top: 0.75rem;">
+          <strong>Источники (цитаты):</strong>
+          <div id="modal-hist-sources" style="margin-top: 0.25rem;"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary close-modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
